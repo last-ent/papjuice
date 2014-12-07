@@ -85,5 +85,4 @@ def start(input_files, mapper=simple_mapper, sorter=simple_sorter, reducer=simpl
 
 
 if __name__ == '__main__':
-    start(input_files=None, mapper=None,
-          sorter=None, reducer=None, output=None)
+    start()

@@ -76,7 +76,7 @@ def reduce_data(sdata, reducer):
     return reduced_data
 
 
-def start(input_files, mapper=simple_mapper, sorter=simple_sorter, reducer=simple_reducer, output=simple_output):
+def start(input_files=None, mapper=simple_mapper, sorter=simple_sorter, reducer=simple_reducer, output=simple_output):
     input_stream = get_input_stream(input_files)
     mapped_data = map_data(input_stream, mapper)
     sorted_data = sort_data(mapped_data, sorter)

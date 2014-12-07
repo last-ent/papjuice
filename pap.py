@@ -22,6 +22,10 @@ def simple_sorter(data):
     return sorted_data
 
 
+def simple_reducer(key, values):
+    return {key: sum(values)}
+
+
 def get_input_stream(inputs):
     if not inputs:
         return (('Java', 'Hadoop', 'RDBMS', 'Prolog', 'Lisp', 'Pascal',),
@@ -62,6 +66,18 @@ def sort_data(mdata, sorter):
     sorted_data = sorter(mdata)
 
     return sorted_data
+
+
+def reduce_data(sdata, reducer):
+    if not reducer:
+        reducer = simple_reducer
+
+    reduced_data = {}
+
+    for key, value in sdata.items():
+        reduced_data.update(reducer(key, value))
+
+    return reduced_data
 
 
 def start(input_files, mapper, sorter, reducer, output):

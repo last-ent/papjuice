@@ -2,10 +2,18 @@ from collections import defaultdict
 
 
 def simple_mapper(stream):
+    """
+    Returns a simple list of tuples: [(<key1>, 1), (<key2>, 1)...]
+    based on data in stream
+    """
     return map(lambda key: (key, 1), stream)
 
 
 def simple_sorter(data):
+    """
+    Accepts list of simple_mapper outputs: [ [(<key1>, 1), (<key2>, 1)...], ... ]
+    Returns a dict of key & list of tuple's second value: { key1: [1,1,...],...}
+    """
     sorted_data = defaultdict(list)
     for data_list in data:
         # map(lambda k,v: sorted_data[k].append(v), data_list)
@@ -28,6 +36,10 @@ def get_input_stream(inputs):
 
 
 def map_data(streams, mapper):
+    """
+    Accepts list of data streams
+    Returns list of - list of tuples
+    """
     if not mapper:
         mapper = simple_mapper
 
@@ -40,6 +52,10 @@ def map_data(streams, mapper):
 
 
 def sort_data(mdata, sorter):
+    """
+    Accepts list of - list of tuples
+    Returns dict of keys & mapper's tuple value
+    """
     if not sorter:
         sorter = simple_sorter
 

@@ -49,9 +49,6 @@ def map_data(streams, mapper):
     Accepts list of data streams
     Returns list of - list of tuples
     """
-    if not mapper:
-        mapper = simple_mapper
-
     mapped_data = list(map(mapper, streams))
 
     # for stream in streams:
@@ -65,18 +62,12 @@ def sort_data(mdata, sorter):
     Accepts list of - list of tuples
     Returns dict of keys & mapper's tuple value
     """
-    if not sorter:
-        sorter = simple_sorter
-
     sorted_data = sorter(mdata)
 
     return sorted_data
 
 
 def reduce_data(sdata, reducer):
-    if not reducer:
-        reducer = simple_reducer
-
     reduced_data = {}
 
     for key, value in sdata.items():
@@ -85,7 +76,7 @@ def reduce_data(sdata, reducer):
     return reduced_data
 
 
-def start(input_files, mapper, sorter, reducer, output=simple_output):
+def start(input_files, mapper=simple_mapper, sorter=simple_sorter, reducer=simple_reducer, output=simple_output):
     input_stream = get_input_stream(input_files)
     mapped_data = map_data(input_stream, mapper)
     sorted_data = sort_data(mapped_data, sorter)

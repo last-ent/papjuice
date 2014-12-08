@@ -1,4 +1,5 @@
 from collections import defaultdict
+import multiprocessing
 
 
 def simple_mapper(stream):
@@ -6,7 +7,7 @@ def simple_mapper(stream):
     Returns a simple list of tuples: [(<key1>, 1), (<key2>, 1)...]
     based on data in stream
     """
-    return map(lambda key: (key, 1), stream)
+    return list(map(lambda key: (key, 1), stream))
 
 
 def simple_sorter(data):
@@ -49,7 +50,30 @@ def map_data(streams, mapper):
     Accepts list of data streams
     Returns list of - list of tuples
     """
-    mapped_data = list(map(mapper, streams))
+    # mapped_data = list(map(mapper, streams))
+    # task_queue = multiprocessing.JoinableQueue()
+    # mapped_data = multiprocessing.Queue()
+
+    pool_size = multiprocessing.cpu_count() * 2
+    pool = multiprocessing.Pool(processes=pool_size)
+
+    mapped_data = pool.map(mapper, streams)
+    pool.close()
+    pool.join()
+
+    # for stream in streams:
+    #     task_queue.put(stream)
+    #     process = process_stream(stream, task_queue, mapped_data)
+    #     process.start()
+    #     # processes.append(process)
+
+    # task_queue.join()
+
+    # for stream in steams:
+    #     process = multiprocessing.Process(target=mapper, args=(stream,))
+
+
+    # multiprocessor = multiprocessing.Process(target=mapper, args=())
 
     # for stream in streams:
     # mappend_data.append(map_process_to_core(stream, mapper))

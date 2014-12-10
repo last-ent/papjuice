@@ -23,8 +23,8 @@ def simple_sorter(data):
     return sorted_data
 
 
-def simple_reducer(key, values):
-    return {key: sum(values)}
+def simple_reducer(kv_pair):
+    return {kv_pair[0]: sum(kv_pair[1])}
 
 
 def simple_output(data):
@@ -40,9 +40,6 @@ def get_input_stream(inputs):
                 )
     else:
         raise Exception('Input situation not addressed.')
-
-
-# def map_process_to_core(stream, mapper):
 
 
 def map_data(streams, mapper):
@@ -71,11 +68,12 @@ def sort_data(mdata, sorter):
 
 
 def reduce_data(sdata, reducer):
-    reduced_data = {}
-
-    for key, value in sdata.items():
-        reduced_data.update(reducer(key, value))
-
+    pool_size = multiprocessing.cpu_count()*2
+    pool = multiprocessing.Pool(processes=pool_size)
+    reduced_data = dict()
+    reduced_list = pool.map(reducer, sdata.items())    
+    for item in reduced_list:
+        reduced_data.update(item)
     return reduced_data
 
 
@@ -85,6 +83,7 @@ def start(input_files=None, mapper=simple_mapper, sorter=simple_sorter,
     mapped_data = map_data(input_stream, mapper)
     sorted_data = sort_data(mapped_data, sorter)
     reduced_data = reduce_data(sorted_data, reducer)
+    assert reduced_data == {'Java':4, 'Hadoop':2, 'RDBMS':3, 'Prolog':4, 'Lisp': 2, 'Pascal':2}
     output(reduced_data)
 
 

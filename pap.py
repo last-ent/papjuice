@@ -46,15 +46,15 @@ def simple_output(data):
     pprint.pprint(data)
 
 
-def map_pool(func, iter_data):
+def map_pool_data(func, iter_data):
     pool_size = multiprocessing.cpu_count() * 2
     pool = multiprocessing.Pool(processes=pool_size)
 
-    map_pool_data = pool.map(func, iter_data)
+    pool_data = pool.map(func, iter_data)
     pool.close()
     pool.join()
 
-    return map_pool_data
+    return pool_data
 
 
 def get_input_stream(inputs):
@@ -72,8 +72,55 @@ def map_data(streams, mapper):
     Accepts list of data streams
     Returns list of - list of tuples
     """
-    mapped_data = map_pool(mapper, streams)
+    mapped_data = map_pool_data(mapper, streams)
     return mapped_data
+
+
+def plex_merge_dicts(dicts):
+    plex_dict = dicts[0]
+    data_dict = dicts[1]
+    # print(type(plex_dict))
+    # print(data_dict)
+    # with sem:
+    keys = data_dict.keys()
+    for key in keys:
+        # print("Process: %s, Plex Dict: %s, Data Dict: %s, Key: %s" %(multiprocessing.current_process().name, plex_dict, data_dict, key))
+        print("%s: %s <- %s:: %s" %(multiprocessing.current_process().name, plex_dict, key, data_dict[key]))
+        # print()
+        # plex_dict.setdefault(key, []).extend(data_dict[key])
+        value = data_dict[key]
+        plex_dict[key].append(value)
+
+def plex_sort_data(mdata, sorter):
+    sorted_dicts = map_pool_data(sorter, mdata)
+    manager = multiprocessing.Manager()
+    # sorted_data = manager.dict()
+    keys = set()
+    for dct in sorted_dicts:
+        for key in dct.keys():
+            keys.add(key)
+    d = dict()
+    for key in keys:
+        d[key] = manager.list([0])
+    sorted_data = manager.dict(d)
+    dict_set = []
+    # sem = multiprocessing.Semaphore(3)
+    # # dict_set = []
+    # processes =[]
+    # for dct in sorted_dicts:
+    #     p = multiprocessing.Process(target=plex_merge_dicts, args=(sem,sorted_data, dct))
+    #     processes.append(p)
+    # for p in processes:
+    #     p.start()
+    # for p in processes:
+    #     p.join()
+    # print("\n\n\t%s\n\n"%(sorted_dicts))
+    for dct in sorted_dicts:
+        dict_set.append([sorted_data, dct])
+
+    map_pool_data(plex_merge_dicts, dict_set)
+    # print(sorted_data)
+    return sorted_data
 
 
 def sort_data(mdata, sorter):
@@ -100,7 +147,7 @@ def sort_data(mdata, sorter):
 
 def reduce_data(sdata, reducer):
     reduced_data = dict()
-    reduced_list = map_pool(reducer, sdata.items())
+    reduced_list = map_pool_data(reducer, sdata.items())
 
     for item in reduced_list:
         reduced_data.update(item)
@@ -112,10 +159,11 @@ def start(input_files=None, mapper=simple_mapper, sorter=plex_sorter,
           reducer=plex_reducer, output=simple_output):
     input_stream = get_input_stream(input_files)
     mapped_data = map_data(input_stream, mapper)
+    # sorted_data = sort_data(mapped_data, sorter)
     sorted_data = sort_data(mapped_data, sorter)
     reduced_data = reduce_data(sorted_data, reducer)
-    assert reduced_data == {
-        'Java': 4, 'Hadoop': 2, 'RDBMS': 3, 'Prolog': 4, 'Lisp': 2, 'Pascal': 2}
+    # assert reduced_data == {
+    #     'Java': 4, 'Hadoop': 2, 'RDBMS': 3, 'Prolog': 4, 'Lisp': 2, 'Pascal': 2}
     output(reduced_data)
 
 

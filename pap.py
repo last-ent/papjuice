@@ -50,7 +50,7 @@ def map_pool(func, iter_data):
     pool_size = multiprocessing.cpu_count() * 2
     pool = multiprocessing.Pool(processes=pool_size)
 
-    map_pool_data = pool.map(reducer, sdata.items())
+    map_pool_data = pool.map(func, iter_data)
     pool.close()
     pool.join()
 
@@ -100,7 +100,7 @@ def sort_data(mdata, sorter):
 
 def reduce_data(sdata, reducer):
     reduced_data = dict()
-    reduced_list = map_pool(reducer, sdata)
+    reduced_list = map_pool(reducer, sdata.items())
 
     for item in reduced_list:
         reduced_data.update(item)

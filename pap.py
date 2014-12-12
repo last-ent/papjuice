@@ -76,50 +76,45 @@ def map_data(streams, mapper):
     return mapped_data
 
 
-def plex_merge_dicts(dicts):
-    plex_dict = dicts[0]
-    data_dict = dicts[1]
-    # print(type(plex_dict))
-    # print(data_dict)
-    # with sem:
-    keys = data_dict.keys()
-    for key in keys:
-        # print("Process: %s, Plex Dict: %s, Data Dict: %s, Key: %s" %(multiprocessing.current_process().name, plex_dict, data_dict, key))
-        print("%s: %s <- %s:: %s" %(multiprocessing.current_process().name, plex_dict, key, data_dict[key]))
-        # print()
-        # plex_dict.setdefault(key, []).extend(data_dict[key])
-        value = data_dict[key]
-        plex_dict[key].append(value)
+def plex_merge_dicts(lock, data_dict, plex_dict):
+    with lock:
+        keys = data_dict.keys()
+        for key in keys:
+            # print("Process: %s, Plex Dict: %s, Data Dict: %s, Key: %s" %(multiprocessing.current_process().name, plex_dict, data_dict, key))
+            # print("%s: %s <- %s:: %s" %(multiprocessing.current_process().name, plex_dict, key, data_dict[key]))
+
+            # Get shared list
+            lst = plex_dict[key]
+            value = data_dict[key]
+            # Update list
+            lst+= value
+            # forces the shared list to be serialized back to manager
+            plex_dict[key]=lst
+            # Solution: http://stackoverflow.com/a/8644552
+
 
 def plex_sort_data(mdata, sorter):
+
     sorted_dicts = map_pool_data(sorter, mdata)
     manager = multiprocessing.Manager()
-    # sorted_data = manager.dict()
+    sorted_data = manager.dict()
     keys = set()
+
     for dct in sorted_dicts:
         for key in dct.keys():
-            keys.add(key)
-    d = dict()
-    for key in keys:
-        d[key] = manager.list([0])
-    sorted_data = manager.dict(d)
-    dict_set = []
-    # sem = multiprocessing.Semaphore(3)
-    # # dict_set = []
-    # processes =[]
-    # for dct in sorted_dicts:
-    #     p = multiprocessing.Process(target=plex_merge_dicts, args=(sem,sorted_data, dct))
-    #     processes.append(p)
-    # for p in processes:
-    #     p.start()
-    # for p in processes:
-    #     p.join()
-    # print("\n\n\t%s\n\n"%(sorted_dicts))
-    for dct in sorted_dicts:
-        dict_set.append([sorted_data, dct])
+            sorted_data[key] = list()
 
-    map_pool_data(plex_merge_dicts, dict_set)
-    # print(sorted_data)
+    processes = []
+
+    lock = multiprocessing.Lock()
+    for dct in sorted_dicts:
+        p = multiprocessing.Process(target=plex_merge_dicts, args=(lock, dct,sorted_data))
+        processes.append(p)
+
+    for p in processes:
+        p.start()
+    for p in processes:
+        p.join()
     return sorted_data
 
 
@@ -160,12 +155,14 @@ def start(input_files=None, mapper=simple_mapper, sorter=plex_sorter,
     input_stream = get_input_stream(input_files)
     mapped_data = map_data(input_stream, mapper)
     # sorted_data = sort_data(mapped_data, sorter)
-    sorted_data = sort_data(mapped_data, sorter)
+    sorted_data = plex_sort_data(mapped_data, sorter)
     reduced_data = reduce_data(sorted_data, reducer)
-    # assert reduced_data == {
-    #     'Java': 4, 'Hadoop': 2, 'RDBMS': 3, 'Prolog': 4, 'Lisp': 2, 'Pascal': 2}
-    output(reduced_data)
+    assert reduced_data == {
+        'Java': 4, 'Hadoop': 2, 'RDBMS': 3, 'Prolog': 4, 'Lisp': 2, 'Pascal': 2}
+    # output(reduced_data)
 
 
 if __name__ == '__main__':
-    start()
+    for i in range(0,50):
+        start()
+        print('.', end=' ')

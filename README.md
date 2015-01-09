@@ -122,3 +122,9 @@ ___
 
 > ## Code Design
 > If we go through above code, we realize that though we described responsibility of each Component - Each Component is pretty much split in two functions. The reason is we are following Single Responsibility principle. This way it will be easier to swap functions at granular level and thus we need not re-write major part of logic everytime we feel a need to change something.
+
+___
+
+> ![CCANCSA](https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png)
+
+> This work (refers to text documents only) by is licensed under a [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License](http://creativecommons.org/licenses/by-nc-sa/4.0/).

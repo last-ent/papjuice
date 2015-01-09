@@ -123,9 +123,9 @@ def sort_data(mdata, sorter):
     Accepts list of - list of tuples
     Returns dict of keys & mapper's tuple value
     """
-    pool_size = multiprocessing.cpu_count() * 2
-    pool = multiprocessing.Pool(processes=pool_size)
-    sorted_dicts = pool.map(sorter, mdata)
+    # pool_size = multiprocessing.cpu_count() * 2
+    # pool = multiprocessing.Pool(processes=pool_size)
+    sorted_dicts = map_pool_data(sorter, mdata)
     sorted_data = {}
 
     for sorted_dict in sorted_dicts:

@@ -7,11 +7,11 @@ class AbstractNodeClass(object):
 
     @abc.abstractmethod
     def get_data(self):
-        pass
+        raise NotImplementedError
 
     @abc.abstractmethod
     def get_health(self):
-        pass
+        raise NotImplementedError
 
 
 class DataNode(AbstractNodeClass):
@@ -49,13 +49,13 @@ class DataStream(object):
 
     def next(self):
         if self.index < self.data_size:
-            data = self.get_node_data(self.index)
+            data = self.__get_node_data(self.index)
             self.index += 1
             return data
         else:
             raise StopIteration()
 
-    def get_node_data(self, index):
+    def __get_node_data(self, index):
         for data_node in self.parallel_nodes:
             if data_node.get_health():
                 return data_node.get_data(index)

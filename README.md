@@ -123,6 +123,8 @@ ___
 > ## Code Design
 > If we go through above code, we realize that though we described responsibility of each Component - Each Component is pretty much split in two functions. The reason is we are following Single Responsibility principle. This way it will be easier to swap functions at granular level and thus we need not re-write major part of logic everytime we feel a need to change something.
 
+Now that we have the correct implementation.
+Let's move onto [Step 2 - Multiprocessing](./docs/multiprocessing.md)
 ___
 
 > ![CCANCSA](https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png)

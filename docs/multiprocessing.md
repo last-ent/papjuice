@@ -94,7 +94,7 @@ def reduce_data(sdata, reducer):
 ```
 
 > DRY PRINCIPLE VIOLATED!
- ___
+> ---
 Before we proceed further, we need to realize that we have written two functions ```reduce_data``` & ```map_data``` with near identical code. In case of ```reduce_data```, even missing out on a few important steps. *Note: It wasn't intentional. But explains why DRY princple is important.* 
 
 Hence we take a slight detour to refactor our code.
@@ -392,7 +392,7 @@ def plex_sort_data(mdata, sorter):
 ```
 Can we be certain that the above code fixes it? What if its just luck? Can we be sure? Well, we need to run it many times to be sure.
 
-### Final Piece of jigsaw
+### Final Piece of the jigsaw
 
 Here we will show our ```start``` function and how we are running the code. We can run our ```start``` for ```n``` number of times and make sure it works. We will run it 50 times. Take special note of easily we are switching between the different components in ```start``` and yet our code works. 
 
@@ -412,7 +412,11 @@ if __name__ == '__main__':
         start()
         print('.', end=' ')
 ```
+___
 
+> A note about Performance
+> ---
+> If we run the above implementation using single process code & multiprocess code for 50 loops, we will observe that the performance of single process doesn't cross 10 seconds while multiprocess takes upward of 19 seconds. The reason for this might be that our implementation isn't correct one (in terms of where to apply multiprocessig), or it might be because of the overhead that multiprocesses require. Also, sharing data between two processes is very slow. However the goal of all this has been to learn concepts and not develop a production ready product; So I believe these issues should be noted but are acceptable.
 
 ___
 

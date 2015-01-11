@@ -32,31 +32,31 @@ class DataNode(AbstractNodeClass):
 
 
 class DataStream(object):
-	def __init__(self, data):
-		self.parallel_nodes = []
-		self.index = 0
-		self.data_size = len(data)
 
-		for i in range(0,3):
-			self.parallel_nodes.append(DataNode(data, i))
+    def __init__(self, data):
+        self.parallel_nodes = []
+        self.index = 0
+        self.data_size = len(data)
 
-	def __iter__(self):
-		return self
+        for i in range(0, 3):
+            self.parallel_nodes.append(DataNode(data, i))
 
-	def __next__(self):
-		return self.next()
+    def __iter__(self):
+        return self
 
-	def next(self):
-		if self.index < self.data_size:
-			data =  self.get_node_data(self.index)
-			self.index +=1
-			return data
-		else:
-			raise StopIteration()
+    def __next__(self):
+        return self.next()
 
-	def get_node_data(self, index):
-		for data_node in self.parallel_nodes:
-			if data_node.get_health():
-				return data_node.get_data(index)
-		raise Exception('PCLOADLETTER')
+    def next(self):
+        if self.index < self.data_size:
+            data = self.get_node_data(self.index)
+            self.index += 1
+            return data
+        else:
+            raise StopIteration()
 
+    def get_node_data(self, index):
+        for data_node in self.parallel_nodes:
+            if data_node.get_health():
+                return data_node.get_data(index)
+        raise Exception('PCLOADLETTER')

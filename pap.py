@@ -122,8 +122,6 @@ def sort_data(mdata, sorter):
     Accepts list of - list of tuples
     Returns dict of keys & mapper's tuple value
     """
-    # pool_size = multiprocessing.cpu_count() * 2
-    # pool = multiprocessing.Pool(processes=pool_size)
     sorted_dicts = map_pool_data(sorter, mdata)
     sorted_data = {}
 
@@ -153,7 +151,6 @@ def start(input_files=None, mapper=simple_mapper, sorter=plex_sorter,
           reducer=plex_reducer, output=simple_output):
     input_stream = get_input_stream(input_files)
     mapped_data = map_data(input_stream, mapper)
-    # sorted_data = sort_data(mapped_data, sorter)
     sorted_data = plex_sort_data(mapped_data, sorter)
     reduced_data = reduce_data(sorted_data, reducer)
     assert reduced_data == {

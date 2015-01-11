@@ -1,5 +1,6 @@
-from collections import defaultdict
 import multiprocessing
+from data_node import DataStream
+from collections import defaultdict
 
 
 def simple_mapper(stream):
@@ -57,12 +58,21 @@ def map_pool_data(func, iter_data):
     return pool_data
 
 
+def get_sample_streams():
+    return (('Java', 'Hadoop', 'RDBMS', 'Prolog', 'Lisp', 'Pascal',),
+            ('Java', 'Java', 'RDBMS', 'Prolog', 'Prolog',),
+            ('Java', 'Hadoop', 'RDBMS', 'Prolog', 'Lisp', 'Pascal'),)
+
+
 def get_input_stream(inputs):
+
     if not inputs:
-        return (('Java', 'Hadoop', 'RDBMS', 'Prolog', 'Lisp', 'Pascal',),
-                ('Java', 'Java', 'RDBMS', 'Prolog', 'Prolog',),
-                ('Java', 'Hadoop', 'RDBMS', 'Prolog', 'Lisp', 'Pascal'),
-                )
+        return get_sample_streams()
+    elif isinstance(inputs, type) and issubclass(inputs, DataStream):
+        returnable = list()
+        for data_stream in get_sample_streams():
+            returnable.append(DataStream(data_stream))
+        return returnable
     else:
         raise Exception('Input situation not addressed.')
 
@@ -81,15 +91,17 @@ def plex_merge_dicts(lock, data_dict, plex_dict):
         keys = data_dict.keys()
         for key in keys:
             # print("Process: %s, Plex Dict: %s, Data Dict: %s, Key: %s" %(multiprocessing.current_process().name, plex_dict, data_dict, key))
-            # print("%s: %s <- %s:: %s" %(multiprocessing.current_process().name, plex_dict, key, data_dict[key]))
+            # print("%s: %s <- %s:: %s"
+            # %(multiprocessing.current_process().name, plex_dict, key,
+            # data_dict[key]))
 
             # Get shared list
             lst = plex_dict[key]
             value = data_dict[key]
             # Update list
-            lst+= value
+            lst += value
             # forces the shared list to be serialized back to manager
-            plex_dict[key]=lst
+            plex_dict[key] = lst
             # Solution: http://stackoverflow.com/a/8644552
 
 
@@ -108,7 +120,8 @@ def plex_sort_data(mdata, sorter):
 
     lock = multiprocessing.Lock()
     for dct in sorted_dicts:
-        p = multiprocessing.Process(target=plex_merge_dicts, args=(lock, dct,sorted_data))
+        p = multiprocessing.Process(
+            target=plex_merge_dicts, args=(lock, dct, sorted_data))
         processes.append(p)
         p.start()
 
@@ -147,7 +160,7 @@ def reduce_data(sdata, reducer):
     return reduced_data
 
 
-def start(input_files=None, mapper=simple_mapper, sorter=plex_sorter,
+def start(input_files=DataStream, mapper=simple_mapper, sorter=plex_sorter,
           reducer=plex_reducer, output=simple_output):
     input_stream = get_input_stream(input_files)
     mapped_data = map_data(input_stream, mapper)
@@ -159,6 +172,6 @@ def start(input_files=None, mapper=simple_mapper, sorter=plex_sorter,
 
 
 if __name__ == '__main__':
-    for i in range(0,50):
+    for i in range(0, 50):
         start()
         print('.', end=' ')

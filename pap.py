@@ -110,9 +110,8 @@ def plex_sort_data(mdata, sorter):
     for dct in sorted_dicts:
         p = multiprocessing.Process(target=plex_merge_dicts, args=(lock, dct,sorted_data))
         processes.append(p)
-
-    for p in processes:
         p.start()
+
     for p in processes:
         p.join()
     return sorted_data

@@ -295,7 +295,7 @@ For our ```plex_sort_data```, we use a bit of old & new and try to achieve follo
 * Use ```Process``` to instantiate our MP logic **for each process instance**
 * In ```Process```, we use ```start``` & ```join``` instead of ```close``` & ```join``` individually
 
-Give these steps let's look at how we achive this:
+Given these steps let's look at how we achive this:
 ```python
 def plex_sort_data(mdata, sorter):
 

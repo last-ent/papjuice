@@ -40,7 +40,7 @@ def map_data(streams, mapper):
 
 We notice that ```mapped_data``` is going sequentially over streams (which is defined by ```get_input_stream``` as being a list of 3 streams.)
 
-Give that none of them are going to affect the other stream, we can safely convert it for multiprocessing as follows:
+Given that none of them are going to affect the other stream, we can safely convert it for multiprocessing as follows:
 
 ```python
 def map_data(streams, mapper):
@@ -292,7 +292,7 @@ If we look at ```multiprocessing.Pool```'s documentation, we realize that it is 
 For our ```plex_sort_data```, we use a bit of old & new and try to achieve following
 * Sort our dicts via MP
 * Use ```Manager.dict``` for shared dict object
-* Use ```Process``` to instantiate our MP logic *for each process instance*
+* Use ```Process``` to instantiate our MP logic **for each process instance**
 * In ```Process```, we use ```start``` & ```join``` instead of ```close``` & ```join``` individually
 
 Give these steps let's look at how we achive this:

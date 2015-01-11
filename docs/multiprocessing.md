@@ -413,7 +413,7 @@ if __name__ == '__main__':
         print('.', end=' ')
 ```
 
-
+So far so good but what about [Fault Tolerance for Data?](../docs/datanode.md)
 ___
 
 > ![CCANCSA](https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png)
